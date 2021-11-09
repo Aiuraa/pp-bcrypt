@@ -2,29 +2,13 @@
 
 [![sampctl](https://img.shields.io/badge/sampctl-pp--bcrypt-2f2f2f.svg?style=for-the-badge)](https://github.com/Kirima2nd/pp-bcrypt)
 
-<!--
-Short description of your library, why it's useful, some examples, pictures or
-videos. Link to your forum release thread too.
+pp-bcrypt is basically a PawnPlus bcrypt with Task based await which
+makes it to get the results in the same place without having to make a new callbacks.
 
-Remember: You can use "forumfmt" to convert this readme to forum BBCode!
+This implementations originally made by Mergevos, but sadly his version is not supporting SyS Bcrypt.
 
-What the sections below should be used for:
-
-`## Installation`: Leave this section un-edited unless you have some specific
-additional installation procedure.
-
-`## Testing`: Whether your library is tested with a simple `main()` and `print`,
-unit-tested, or demonstrated via prompting the player to connect, you should
-include some basic information for users to try out your code in some way.
-
-And finally, maintaining your version number`:
-
-* Follow [Semantic Versioning](https://semver.org/)
-* When you release a new version, update `VERSION` and `git tag` it
-* Versioning is important for sampctl to use the version control features
-
-Happy Pawning!
--->
+The only difference between mine and Mergevos is this version doesn't support Dynamic String because it's a lot harder
+to maintain and it seems like SyS version doesn't like it at all.
 
 ## Installation
 
@@ -34,30 +18,48 @@ Simply install to your project:
 sampctl package install Kirima2nd/pp-bcrypt
 ```
 
-Include in your code and begin using the library:
+Include in your code after PawnPlus.inc and BCrypt include, then you can begin using the library:
 
 ```pawn
+#include <PawnPlus>
+#include <samp_bcrypt>
+
 #include <pp-bcrypt>
+```
+
+## Function Lists
+```pawn
+stock Task:BCrypt_HashAsync(const input[]);
+stock Task:BCrypt_CheckAsync(const input[], const hash[]);
 ```
 
 ## Usage
 
-<!--
-Write your code documentation or examples here. If your library is documented in
-the source code, direct users there. If not, list your API and describe it well
-in this section. If your library is passive and has no API, simply omit this
-section.
--->
+```pawn
+#include <PawnPlus>
+#include <samp_bcrypt>
+
+#include <pp-bcrypt>
+
+main()
+{
+    await_arr(x_result) BCrypt_HashAsync("Hello World!");
+    new ret = await BCrypt_CheckAsync("Hello World!", x_result);
+
+    printf("Result naked: %s", x_result);
+    printf("Result same?: %s", ret ? "Yes" : "No");
+}
+```
 
 ## Testing
-
-<!--
-Depending on whether your package is tested via in-game "demo tests" or
-y_testing unit-tests, you should indicate to readers what to expect below here.
--->
 
 To test, simply run the package:
 
 ```bash
 sampctl package run
 ```
+
+## Credits
+* Mergevos - [async-bcrypt](https://github.com/Mergevos/samp-async-bcrypt) (It give me inspiration to make this one)
+* Grabber - [pp-mysql](https://github.com/AGraber/pawn-plus-mysql) (the pp logic basically from his include)
+* IllidanS4 - [PawnPlus](https://github.com/IllidanS4/PawnPlus)
