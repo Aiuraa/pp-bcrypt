@@ -1,6 +1,6 @@
 
 /*
-    PawnPlus bcrypt (v1.0.0)
+    PawnPlus bcrypt (v2.0.0)
     By: Kirima2nd
 
     This include support both of bcrypt plugins (Either SyS or Lassir)
@@ -42,7 +42,7 @@
     #error "Please include either one of bcrypt include first before using this."
 #endif
 
-stock Task:BCrypt_HashAsync(const input[], cost = BCRYPT_COST)
+stock Task:BCrypt_AsyncHash(const input[], cost = BCRYPT_COST)
 {
     new
         Task:hash_task = task_new(),
@@ -65,7 +65,30 @@ stock Task:BCrypt_HashAsync(const input[], cost = BCRYPT_COST)
     return hash_task;
 }
 
-stock Task:BCrypt_CheckAsync(const input[], const hash[])
+stock Task:BCrypt_AsyncHashStr(ConstStringTag:input, cost = BCRYPT_COST)
+{
+    new
+        Task:hash_task = task_new(),
+        Handle:hash_handle = handle_new(hash_task, .weak = true);
+    
+    #if defined _samp_bcrypt_included
+    new ret = pawn_call_native("bcrypt_hash", "dsSds*", 0, "_pp@on_hashed", String:input, cost, "d", _:hash_handle);
+    #elseif defined bcrypt_included
+    new ret = bcrypt_hash_s(str_addr(String:input), cost, "_pp@on_hashed", "dd", 0, _:hash_handle);
+    #endif
+
+    if (ret)
+    {
+        handle_acquire(hash_handle);
+    }
+    else
+    {
+        task_set_error_ms(hash_task, amx_err_exit, 0);
+    }
+    return hash_task;
+}
+
+stock Task:BCrypt_AsyncVerify(const input[], const hash[])
 {
     new
         Task:hash_check_task = task_new(),
