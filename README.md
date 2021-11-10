@@ -7,8 +7,7 @@ makes it to get the results in the same place without having to make a new callb
 
 This implementations originally made by Mergevos, but sadly his version is not supporting SyS Bcrypt.
 
-The only difference between mine and Mergevos is this version doesn't support Dynamic String because it's a lot harder
-to maintain and it seems like SyS version doesn't like it at all.
+Supports hashing for Dynamic String.
 
 ## Installation
 
@@ -29,8 +28,12 @@ Include in your code after PawnPlus.inc and BCrypt include, then you can begin u
 
 ## Function Lists
 ```pawn
-stock Task:BCrypt_HashAsync(const input[]);
-stock Task:BCrypt_CheckAsync(const input[], const hash[]);
+// Hashing (Both returns array/normal string with BCRYPT_HASH_LENGTH size)
+stock Task:BCrypt_AsyncHash(const input[], cost = BCRYPT_COST);
+stock Task:BCrypt_AsyncHashStr(ConstStringTag:input, cost = BCRYPT_COST);
+
+// Verifying (Returns integer/number either 0 or 1)
+stock Task:BCrypt_AsyncVerify(const input[], const hash[]);
 ```
 
 ## Usage
@@ -43,8 +46,8 @@ stock Task:BCrypt_CheckAsync(const input[], const hash[]);
 
 main()
 {
-    await_arr(x_result) BCrypt_HashAsync("Hello World!");
-    new ret = await BCrypt_CheckAsync("Hello World!", x_result);
+    await_arr(x_result) BCrypt_AsyncHash("Hello World!");
+    new ret = await BCrypt_AsyncVerify("Hello World!", x_result);
 
     printf("Result naked: %s", x_result);
     printf("Result same?: %s", ret ? "Yes" : "No");
