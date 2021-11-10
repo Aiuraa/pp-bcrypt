@@ -122,6 +122,11 @@ public _pp@on_verifyhash(CallbackHandler:id, Handle:hash_check_handle, playerid,
     {
         task_set_result(hash_check_task, success);
     }
+
+    #if defined _samp_bcrypt_included
+    pawn_unregister_callback(id);
+    #endif
+
     handle_release(hash_check_handle);
     return 1;
 }
