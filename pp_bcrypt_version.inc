@@ -3,5 +3,5 @@
 // To update the version number for a new release, run "sampctl package release"
 
 #define PP_BCRYPT_VERSION_MAJOR (2)
-#define PP_BCRYPT_VERSION_MINOR (0)
+#define PP_BCRYPT_VERSION_MINOR (1)
 #define PP_BCRYPT_VERSION_PATCH (0)
