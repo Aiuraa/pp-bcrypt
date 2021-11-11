@@ -28,16 +28,25 @@ Include in your code after PawnPlus.inc and BCrypt include, then you can begin u
 
 ## Function Lists
 ```pawn
-// Hashing (Both returns array/normal string with BCRYPT_HASH_LENGTH size)
+/*
+    Hashing
+    - returns string hash with BCRYPT_HASH_LENGTH size
+    - returns Dynamic String
+*/
 stock Task:BCrypt_AsyncHash(const input[], cost = BCRYPT_COST);
 stock Task:BCrypt_AsyncHashStr(ConstStringTag:input, cost = BCRYPT_COST);
 
-// Verifying (Returns integer/number either 0 or 1)
+/* 
+    Verifying
+    - Returns integer/number (success can be 0 and 1)
+*/
 stock Task:BCrypt_AsyncVerify(const input[], const hash[]);
+stock Task:BCrypt_AsyncVerifyStr(ConstStringTag:input, ConstStringTag:hash);
 ```
 
 ## Usage
 
+Normal string usage:
 ```pawn
 #include <PawnPlus>
 #include <samp_bcrypt>
@@ -53,6 +62,27 @@ main()
     printf("Result same?: %s", ret ? "Yes" : "No");
 }
 ```
+
+PawnPlus Dynamic String usage:
+```pawn
+main()
+{
+    new String:text = str_new_static("Helo World!");
+    pawn_guard(text);
+
+    new String:hash = await_s BCrypt_AsyncHashStr(text, 12);
+    pawn_guard(hash);
+
+    new hash_str[BCRYPT_HASH_LENGTH];
+    str_get(hash, hash_str);
+    printf("Result naked: %s", hash_str);
+
+    new ret = await BCrypt_AsyncVerifyStr(text, hash);
+    printf("Result same?: %s", ret ? "Yes" : "No");
+}
+```
+
+In that example, using `pawn_guard` is required since i'm storing the string as local and can be destroyed in both `BCrypt_AsyncHashStr` and `BCrypt_AsyncVerifyStr`. But if you're already using `str_acquire` and deceided to make the Dynamic String to be accessed globally, then no need to use `pawn_guard`.
 
 ## Testing
 
