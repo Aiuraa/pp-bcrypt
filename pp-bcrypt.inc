@@ -1,6 +1,6 @@
 
 /*
-    PawnPlus bcrypt (v2.0.0)
+    PawnPlus bcrypt (v2.1.0)
     By: Kirima2nd
 
     This include support both of bcrypt plugins (Either SyS or Lassir)
