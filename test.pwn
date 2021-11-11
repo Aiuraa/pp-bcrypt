@@ -1,6 +1,7 @@
 
 #include <a_samp>
 
+#define PP_SYNTAX_GENERIC
 #define PP_SYNTAX_AWAIT
 
 #include <PawnPlus>
@@ -30,11 +31,16 @@ BCrypt_BeginTesting()
 
 BCrypt_BeginTestingStr()
 {
-    //pawn_call_native("bcrypt_hash", "dsSdsi", 0, "OnSomething", str_new_static("Hello World!"), BCRYPT_COST, "i", 12);
-    new x_result[BCRYPT_HASH_LENGTH];
-    await_arr(x_result) BCrypt_AsyncHashStr(str_new_static("Hello World!"), 12);
-    new ret = await BCrypt_AsyncVerify("Hello World!", x_result);
+    new String:text = str_new_static("Helo World!");
+    pawn_guard(text);
 
-    printf("Result naked: %s", x_result);
+    new String:hash = await_s BCrypt_AsyncHashStr(text, 12);
+    pawn_guard(hash);
+
+    new hash_str[BCRYPT_HASH_LENGTH];
+    str_get(hash, hash_str);
+    printf("Result naked: %s", hash_str);
+
+    new ret = await BCrypt_AsyncVerifyStr(text, hash);
     printf("Result same?: %s", ret ? "Yes" : "No");
 }
