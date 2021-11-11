@@ -31,8 +31,13 @@
     #define BCRYPT_HASH_LENGTH (60 + 1)
 #endif
 
+#if defined PP_SYNTAX_AWAIT
+    stock String:task_await_s(Task:task) return task_wait(task), task_get_result_str_s(task);
+    #define await_s%0\32;%1; task_await_s%0(%1);
+#endif
+
 #if defined _samp_bcrypt_included
-    native bcrypt_hash_s(playerid, const callback[], ConstAmxString:input, cost, const args[] = "", {AmxStringBuffer, Float, _}:...) = bcrypt_hash;
+    native bcrypt_hash_s(playerid, const callback[], ConstAmxString:input, cost, const args[] = "", {AmxString, Float, _}:...) = bcrypt_hash;
     native bcrypt_verify_s(playerid, const callback[], ConstAmxString:input, ConstAmxString:hash) = bcrypt_verify;
 #elseif defined bcrypt_included
     native bcrypt_hash_s(ConstAmxString:input, cost = BCRYPT_COST, const callback[], const args[], {AmxString, Float, _}:...) = bcrypt_hash;
@@ -49,9 +54,9 @@ stock Task:BCrypt_AsyncHash(const input[], cost = BCRYPT_COST)
         Handle:hash_handle = handle_new(hash_task, .weak = true);
     
     #if defined _samp_bcrypt_included
-    new ret = bcrypt_hash(0, "_pp@on_hashed", input, cost, "d", _:hash_handle);
+    new ret = bcrypt_hash(0, "_pp@on_hashed@pp_bcrypt", input, cost, "d", _:hash_handle);
     #elseif defined bcrypt_included
-    new ret = bcrypt_hash(input, cost, "_pp@on_hashed", "dd", 0, _:hash_handle);
+    new ret = bcrypt_hash(input, cost, "_pp@on_hashed@pp_bcrypt", "dd", 0, _:hash_handle);
     #endif
 
     if (ret)
@@ -72,9 +77,9 @@ stock Task:BCrypt_AsyncHashStr(ConstStringTag:input, cost = BCRYPT_COST)
         Handle:hash_handle = handle_new(hash_task, .weak = true);
     
     #if defined _samp_bcrypt_included
-    new ret = pawn_call_native("bcrypt_hash", "dsSds*", 0, "_pp@on_hashed", String:input, cost, "d", _:hash_handle);
+    new ret = pawn_call_native("bcrypt_hash", "dsSds*", 0, "_pp@on_hashed_s@pp_bcrypt", String:input, cost, "d", _:hash_handle);
     #elseif defined bcrypt_included
-    new ret = bcrypt_hash_s(str_addr(String:input), cost, "_pp@on_hashed", "dd", 0, _:hash_handle);
+    new ret = bcrypt_hash_s(str_addr(String:input), cost, "_pp@on_hashed_s@pp_bcrypt", "dd", 0, _:hash_handle);
     #endif
 
     if (ret)
@@ -93,13 +98,14 @@ stock Task:BCrypt_AsyncVerify(const input[], const hash[])
     new
         Task:hash_check_task = task_new(),
         Handle:hash_check_handle = handle_new(hash_check_task, .weak = true);
-    
+
     // Lassir include needs to pass 4 parameter (i think only two woks?)
     // Because it may contradicts with SyS reserved callback.
     #if defined _samp_bcrypt_included
-    new ret = bcrypt_verifyFix("_pp@on_verifyhash", input, hash, hash_check_handle);
+    pawn_register_callback("_pp@on_verifyhashfix@pp_bcrypt", "_pp@on_hash_verify@pp_bcrypt", _, "ed", hash_check_handle);
+    new ret = bcrypt_verify(0, "_pp@on_verifyhashfix@pp_bcrypt", input, hash);
     #elseif defined bcrypt_included
-    new ret = bcrypt_check(input, hash, "_pp@on_verifyhash", "dddd", 0, _:hash_check_handle, 0, 0);
+    new ret = bcrypt_check(input, hash, "_pp@on_hash_verify@pp_bcrypt", "dddd", 0, _:hash_check_handle, 0, 0);
     #endif
 
     if (ret)
@@ -113,8 +119,34 @@ stock Task:BCrypt_AsyncVerify(const input[], const hash[])
     return hash_check_task;
 }
 
-forward _pp@on_hashed(playerid, Handle:hash_handle);
-public _pp@on_hashed(playerid, Handle:hash_handle)
+stock Task:BCrypt_AsyncVerifyStr(ConstStringTag:input, ConstStringTag:hash)
+{
+    new
+        Task:hash_check_task = task_new(),
+        Handle:hash_check_handle = handle_new(hash_check_task, .weak = true);
+
+    // Lassir include needs to pass 4 parameter (i think only two woks?)
+    // Because it may contradicts with SyS reserved callback.
+    #if defined _samp_bcrypt_included
+    pawn_register_callback("_pp@on_verifyhashfix@pp_bcrypt", "_pp@on_hash_verify@pp_bcrypt", _, "ed", hash_check_handle);
+    new ret = pawn_call_native("bcrypt_verify", "dsSS", 0, "_pp@on_verifyhashfix@pp_bcrypt", String:input, String:hash);
+    #elseif defined bcrypt_included
+    new ret = bcrypt_check_s(str_addr(String:input), str_addr(String:hash), "_pp@on_hash_verify@pp_bcrypt", "dddd", 0, _:hash_check_handle, 0, 0);
+    #endif
+
+    if (ret)
+    {
+        handle_acquire(hash_check_handle);
+    }
+    else
+    {
+        task_set_error_ms(hash_check_task, amx_err_exit, 0);
+    }
+    return hash_check_task;
+}
+
+forward _pp@on_hashed@pp_bcrypt(playerid, Handle:hash_handle);
+public _pp@on_hashed@pp_bcrypt(playerid, Handle:hash_handle)
 {
     new
         Task:hash_task = Task:handle_get(hash_handle);
@@ -125,14 +157,34 @@ public _pp@on_hashed(playerid, Handle:hash_handle)
             hash[BCRYPT_HASH_LENGTH];
         
         bcrypt_get_hash(hash);
-        task_set_result_arr(hash_task, hash);
+        task_set_result_str(hash_task, hash);
     }
+
     handle_release(hash_handle);
     return 1;
 }
 
-forward _pp@on_verifyhash(CallbackHandler:id, Handle:hash_check_handle, playerid, bool:success);
-public _pp@on_verifyhash(CallbackHandler:id, Handle:hash_check_handle, playerid, bool:success)
+forward _pp@on_hashed_s@pp_bcrypt(playerid, Handle:hash_handle);
+public _pp@on_hashed_s@pp_bcrypt(playerid, Handle:hash_handle)
+{
+    new
+        Task:hash_task = Task:handle_get(hash_handle);
+
+    if (handle_linked(hash_handle))
+    {
+        new 
+            hash[BCRYPT_HASH_LENGTH];
+        
+        bcrypt_get_hash(hash);
+        task_set_result_str_s(hash_task, str_new_static(hash));
+    }
+
+    handle_release(hash_handle);
+    return 1;
+}
+
+forward _pp@on_hash_verify@pp_bcrypt(CallbackHandler:id, Handle:hash_check_handle, playerid, bool:success);
+public _pp@on_hash_verify@pp_bcrypt(CallbackHandler:id, Handle:hash_check_handle, playerid, bool:success)
 {
     new 
         Task:hash_check_task = Task:handle_get(hash_check_handle);
@@ -161,15 +213,7 @@ public _pp@on_verifyhash(CallbackHandler:id, Handle:hash_check_handle, playerid,
 forward _pp@on_init@pp_bcrypt();
 public _pp@on_init@pp_bcrypt()
 {
-    pawn_create_callback("_pp@on_verifyhashfix", expr_true());
+    pawn_create_callback("_pp@on_verifyhashfix@pp_bcrypt", expr_true());
     return 1;
 }
-
-static stock bcrypt_verifyFix(const callback[], const input[], const hash[], Handle:current_handle)
-{
-    pawn_register_callback("_pp@on_verifyhashfix", callback, _, "ed", current_handle);
-    new ret = bcrypt_verify(0, "_pp@on_verifyhashfix", input, hash);
-    return ret;
-}
-
 #endif
