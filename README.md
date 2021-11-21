@@ -55,7 +55,7 @@ Normal string usage:
 
 main()
 {
-    await_arr(x_result) BCrypt_AsyncHash("Hello World!");
+    await_str(x_result) BCrypt_AsyncHash("Hello World!");
     new ret = await BCrypt_AsyncVerify("Hello World!", x_result);
 
     printf("Result naked: %s", x_result);
@@ -70,7 +70,7 @@ main()
     new String:text = str_new_static("Helo World!");
     pawn_guard(text);
 
-    new String:hash = await_s BCrypt_AsyncHashStr(text, 12);
+    new String:hash = await_str_s BCrypt_AsyncHashStr(text, 12);
     pawn_guard(hash);
 
     new hash_str[BCRYPT_HASH_LENGTH];
