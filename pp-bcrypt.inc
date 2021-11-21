@@ -1,6 +1,6 @@
 
 /*
-    PawnPlus bcrypt (v2.1.1)
+    PawnPlus bcrypt (v2.1.2)
     By: Kirima2nd
 
     This include support both of bcrypt plugins (Either SyS or Lassir)
@@ -34,8 +34,8 @@
 #if defined PP_SYNTAX_AWAIT
     stock String:Ks_task_await_s(Task:task) return task_wait(task), task_get_result_str_s(task);
     
-    #if !defined await_s
-        #define await_s%0\32;%1; Ks_task_await_s%0(%1);
+    #if !defined await_str_s
+        #define await_str_s%0\32;%1; Ks_task_await_s%0(%1);
     #endif
 #endif
 
