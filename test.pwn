@@ -15,32 +15,32 @@ main()
 {
     printf("Testing bcrypt...");
 
-    BCrypt_BeginTesting();
-    BCrypt_BeginTestingStr();
+    // Using y_testing doesn't work here
+    // It can lead to "possible crash thingy"
+    BCrypt_TestNormalHash();
+    BCrypt_TestDynamicStrHash();
 }
 
-BCrypt_BeginTesting()
+BCrypt_TestNormalHash()
 {
     new x_result[BCRYPT_HASH_LENGTH];
-    await_arr(x_result) BCrypt_AsyncHash("Hello World!");
+    await_str(x_result) BCrypt_AsyncHash("Hello World!");
     new ret = await BCrypt_AsyncVerify("Hello World!", x_result);
 
     printf("Result naked: %s", x_result);
     printf("Result same?: %s", ret ? "Yes" : "No");
 }
 
-BCrypt_BeginTestingStr()
+BCrypt_TestDynamicStrHash()
 {
-    new String:text = str_new_static("Helo World!");
-    pawn_guard(text);
-
-    new String:hash = await_str_s BCrypt_AsyncHashStr(text, 12);
+    new String:hash = await_str_s BCrypt_AsyncHashStr(str_new_static("Helo World!"), 12);
     pawn_guard(hash);
+
+    new ret = await BCrypt_AsyncVerifyStr(str_new_static("Helo World!"), hash);
 
     new hash_str[BCRYPT_HASH_LENGTH];
     str_get(hash, hash_str);
-    printf("Result naked: %s", hash_str);
 
-    new ret = await BCrypt_AsyncVerifyStr(text, hash);
+    printf("Result naked: %s", hash_str);
     printf("Result same?: %s", ret ? "Yes" : "No");
 }
