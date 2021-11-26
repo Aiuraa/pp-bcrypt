@@ -8,9 +8,6 @@
 		"IllidanS4/PawnPlus:v1.4.0.1",
 		"Sreyas-Sreelal/samp-bcrypt:0.3.4"
 	],
-	"dev_dependencies": [
-		"pawn-lang/YSI-Includes"
-	],
 	"contributors": [
 		"Kirima2nd"
 	]
