@@ -1,5 +1,5 @@
 {
-	"user": "Kirima2nd",
+	"user": "Aiuraa",
 	"repo": "pp-bcrypt",
 	"entry": "test.pwn",
 	"output": "test.amx",
@@ -8,6 +8,13 @@
 		"IllidanS4/PawnPlus:v1.4.0.1",
 		"Sreyas-Sreelal/samp-bcrypt:0.3.4"
 	],
+	"build": {
+		"constants": {
+			"PP_SYNTAX_GENERIC": "",
+			"PP_SYNTAX_AWAIT": "",
+			"PP_SYNTAX_THREADED": ""
+		}
+	},
 	"contributors": [
 		"Kirima2nd"
 	]
