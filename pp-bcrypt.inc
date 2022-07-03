@@ -1,6 +1,6 @@
 
 /*
-    PawnPlus bcrypt (v2.2.1)
+    PawnPlus bcrypt (v2.2.2)
     By: Kirima
 
     This include support both of bcrypt plugins (Either SyS or Lassir)
@@ -11,9 +11,11 @@
         - Mergevos (Inspired from his bcrypt include)
         - Grabber (pp-mysql method that i used in here)
 */
-
 #if !defined _PawnPlus_included
-    #error "Please include PawnPlus.inc first before using this."
+    #tryinclude <PawnPlus>
+#endif
+#if !defined _PawnPlus_included
+    #error pp-bcrypt.inc needs PawnPlus to be installed, please download them
 #endif
 
 #if defined _INC_pp_bcrypt
