@@ -1,7 +1,7 @@
 
 /*
-    PawnPlus bcrypt (v2.2.0)
-    By: Kirima2nd
+    PawnPlus bcrypt (v2.2.1)
+    By: Kirima
 
     This include support both of bcrypt plugins (Either SyS or Lassir)
     Using some tricks that actually works well with two plugins.
@@ -10,7 +10,6 @@
         - IllidanS4 (PawnPlus Creator)
         - Mergevos (Inspired from his bcrypt include)
         - Grabber (pp-mysql method that i used in here)
-
 */
 
 #if !defined _PawnPlus_included
@@ -22,6 +21,20 @@
 #endif
 
 #define _INC_pp_bcrypt
+
+// We need to include bcrypt automatically by ourselves if the user doesn't include it.
+// Finding one of two includes, and if not found then you can just give error.
+#if !defined _samp_bcrypt_included
+    #tryinclude <samp_bcrypt>
+#endif
+#if !defined _samp_bcrypt_included
+    #if !defined bcrypt_included
+        #tryinclude <bcrypt>
+    #endif
+    #if !defined bcrypt_included
+        #error You need to download one of two bcrypt include before using this
+    #endif
+#endif
 
 // Distinguish between string and array.
 #define string: 
@@ -68,7 +81,7 @@ stock Task:BCrypt_AsyncHash(const string:input[], cost = BCRYPT_COST)
     new
         Task:hash_task = task_new(),
         Handle:hash_handle = handle_new(hash_task, .weak = true);
-    
+
     #if defined _samp_bcrypt_included
     new ret = bcrypt_hash(0, "_pp@on_hashed@pp_bcrypt", input, cost, "d", _:hash_handle);
     #elseif defined bcrypt_included
