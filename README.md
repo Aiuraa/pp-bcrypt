@@ -18,9 +18,6 @@ sampctl package install Aiuraa/pp-bcrypt
 Include in your code after PawnPlus.inc and BCrypt include, then you can begin using the library:
 
 ```pawn
-#include <PawnPlus>
-#include <samp_bcrypt>
-
 #include <pp-bcrypt>
 ```
 
@@ -46,39 +43,48 @@ stock Task:BCrypt_AsyncVerifyStr(ConstStringTag:input, ConstStringTag:hash);
 
 Normal string usage:
 ```pawn
-#include <PawnPlus>
-#include <samp_bcrypt>
-
 #include <pp-bcrypt>
 
 main()
 {
-    new x_result[BCRYPT_HASH_LENGTH];
-    await_str(x_result) BCrypt_AsyncHash("Hello World!");
-    new ret = await BCrypt_AsyncVerify("Hello World!", x_result);
+    // First, get the hash using BCrypt_AsyncHash with await_str method.
+    new string_hash[BCRYPT_HASH_LENGTH];
+    await_str(string_hash) BCrypt_AsyncHash("Hello World!");
 
-    printf("Result naked: %s", x_result);
+    // After that, we verify it using BCrypt_AsyncVerify with await method.
+    new ret = await BCrypt_AsyncVerify("Hello World!", string_hash);
+
+    // And finally, print the results here (since this is just a test, you don't have to do this)
+    printf("Result hash: %s", string_hash);
     printf("Result same?: %s", ret ? "Yes" : "No");
 }
 ```
 
 Dynamic String usage:
 ```pawn
+#include <pp-bcrypt>
+
 main()
 {
+    // First, get the hash using BCrypt_AsyncHashStr with await_str_s method.
     new String:hash = await_str_s BCrypt_AsyncHashStr(str_new_static("Helo World!"), 12);
+
+    // After that, we use pawn_guard (see below for explanation)
     pawn_guard(hash);
 
+    // Then, we verify it using BCrypt_AsyncVerifyStr with await method.
     new ret = await BCrypt_AsyncVerifyStr(str_new_static("Helo World!"), hash);
 
     new hash_str[BCRYPT_HASH_LENGTH];
     str_get(hash, hash_str);
 
-    printf("Result naked: %s", hash_str);
+    // And finally, print the results here (since this is just a test, you don't have to do this)
+    printf("Result hash: %s", hash_str);
     printf("Result same?: %s", ret ? "Yes" : "No");
 }
 ```
 
+#### Why pawn_guard?
 In `Dynamic String` usage, using `pawn_guard` is required for making sure that the hash will be destroyed at the end of `main` function. Without this the `hash` text can be destroyed when calling `BCrypt_AsyncVerifyStr`. But if you're already using `str_acquire` and decided to make the Dynamic String to be accessed globally, then no need to use `pawn_guard`.
 
 ## Testing
