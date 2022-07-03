@@ -1,6 +1,6 @@
 # PawnPlus BCrypt
 
-[![sampctl](https://img.shields.io/badge/sampctl-pp--bcrypt-2f2f2f.svg?style=for-the-badge)](https://github.com/Kirima2nd/pp-bcrypt)
+[![sampctl](https://img.shields.io/badge/sampctl-pp--bcrypt-2f2f2f.svg?style=for-the-badge)](https://github.com/Aiuraa/pp-bcrypt)
 
 PawnPlus BCrypt is a library to make hashing and checking more easy with a help of `Task & Await` from PawnPlus.
 
@@ -12,7 +12,7 @@ This implementations originally took from Mergevos, but his version doesn't supp
 Simply install to your project:
 
 ```bash
-sampctl package install Kirima2nd/pp-bcrypt
+sampctl package install Aiuraa/pp-bcrypt
 ```
 
 Include in your code after PawnPlus.inc and BCrypt include, then you can begin using the library:
