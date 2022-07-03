@@ -11,8 +11,7 @@
 	"build": {
 		"constants": {
 			"PP_SYNTAX_GENERIC": "",
-			"PP_SYNTAX_AWAIT": "",
-			"PP_SYNTAX_THREADED": ""
+			"PP_SYNTAX_AWAIT": ""
 		}
 	},
 	"contributors": [

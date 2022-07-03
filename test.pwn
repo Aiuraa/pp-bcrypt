@@ -2,11 +2,6 @@
 // It can lead to "possible crash thingy"
 
 #include <a_samp>
-
-#define PP_SYNTAX_GENERIC
-#define PP_SYNTAX_AWAIT
-
-#include <PawnPlus>
 #include <pp-bcrypt>
 
 main()
