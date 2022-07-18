@@ -5,9 +5,11 @@
 	"output": "test.amx",
 	"dependencies": [
 		"sampctl/samp-stdlib",
-		"IllidanS4/PawnPlus:v1.4.0.1",
-		"Sreyas-Sreelal/samp-bcrypt:0.3.4"
+		"IllidanS4/PawnPlus:v1.4.0.1"
 	],
+	"dev_dependencies": [
+		"Sreyas-Sreelal/samp-bcrypt:0.3.4"
+	]
 	"build": {
 		"constants": {
 			"PP_SYNTAX_GENERIC": "",
