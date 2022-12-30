@@ -49,26 +49,12 @@
     #define BCRYPT_HASH_LENGTH (60 + 1)
 #endif
 
-// Preparing this just in case there is no update release from PawnPlus.
-// This introduces two new await syntax that may available for the next update.
-#if defined PP_SYNTAX_AWAIT
-    stock Ks_task_await_str(Task:task, string:result[], len = sizeof (result)) return task_wait(task), task_get_result_str(task, result, len);
-    stock String:Ks_task_await_str_s(Task:task) return task_wait(task), task_get_result_str_s(task);
-
-    #if !defined await_str
-        #define await_str%0(%1)%2; Ks_task_await_str%0(%2,%1);
-    #endif
-
-    #if !defined await_str_s
-        #define await_str_s%0\32;%1; Ks_task_await_str_s%0(%1);
-    #endif
-#endif
-
 // Only give if lassir include available since i'm pretty sure 100% using SyS version would fail.
 #if defined bcrypt_included
     native bcrypt_hash_s(ConstAmxString:input, cost = BCRYPT_COST, const callback[], const args[], {AmxString, Float, _}:...) = bcrypt_hash;
     native bcrypt_check_s(ConstAmxString:input, ConstAmxString:hash, const callback[], const args[], {AmxString, Float, _}:...) = bcrypt_check;
     native bcrypt_needs_rehash_s(ConstAmxString:input, cost = BCRYPT_COST) = bcrypt_needs_rehash;
+    native bcrypt_get_hash_s(AmxString:hash) = bcrypt_get_hash;
 #endif
 
 /*
@@ -232,10 +218,10 @@ public _pp@on_hashed_s@pp_bcrypt(playerid, Handle:hash_handle)
     if (handle_linked(hash_handle))
     {
         new 
-            hash[BCRYPT_HASH_LENGTH];
+            string:hash[BCRYPT_HASH_LENGTH];
         
         bcrypt_get_hash(hash);
-        task_set_result_str_s(hash_task, str_new_static(hash));
+        task_set_result_str_s(hash_task, str_new(hash));
     }
 
     handle_release(hash_handle);
